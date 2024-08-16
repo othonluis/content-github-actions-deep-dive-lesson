@@ -82,7 +82,7 @@ jobs:
     needs: upload
     strategy:
       matrix:
-        input: [ "Hello", "Hi" ]
+        input: ["Hello", "Hi"]
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -97,6 +97,22 @@ jobs:
             --code S3Bucket=new-bucket-gha,S3Key=${{ github.sha }}.zip \
             --handler lambda_function.lambda_handler --runtime python3.8 \
             --role arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/my-lambda-role
+
+      - name: Wait for function to be ready
+        run: |
+          for i in {1..10}; do
+          state=$(aws lambda get-function-configuration --function-name test-function-${{ matrix.input }} --query 'State' --output text)
+          if [ "$state" == "Active" ]; then
+           echo "Function is active."
+           break
+          elif [ "$state" == "Failed" ]; then
+           echo "Function creation failed."
+           exit 1
+          else
+           echo "Function is in state $state. Waiting..."
+           sleep 10
+          fi
+          done
 
       - name: Invoke test function
         run: |
