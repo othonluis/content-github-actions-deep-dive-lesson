@@ -13,7 +13,7 @@ jobs:
         uses: actions@checout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions@setup-python@v5
         with:
           python-version: "3.8"
 
@@ -29,7 +29,7 @@ jobs:
           zip -r ../${{ github.sha }}.zip .
 
       - name: Archive Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions@upload-artifact@v2
         with:
           name: zipped-bundle
           path: ${{ github.sha }}.zip
