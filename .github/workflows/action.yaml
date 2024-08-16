@@ -107,6 +107,9 @@ jobs:
             exit1
           fi
 
+      - name: Wait 30 seconds
+        run: sleep 30
+
       - name: Destroy test function
         if: ${{ always() }}
         run: |
